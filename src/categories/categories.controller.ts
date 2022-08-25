@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
-import { Category } from 'src/categories/category.entity';
+import { Category } from 'src/categories/categories.entity';
 import { ICategories } from 'src/categories/ICategories';
 import { CategoriesService } from 'src/categories/categories.sevice';
 

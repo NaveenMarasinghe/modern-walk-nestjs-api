@@ -1,25 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from 'src/products/product.entity';
-import { ProductRating } from 'src/products/productRating.entity';
-import { IProduct } from 'src/products/IProduct';
-import { Repository } from 'typeorm';
+import { Product } from './products.entity';
+import { ProductRating } from './productRating.entity';
+import { IProduct } from './IProduct';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    @InjectRepository(Product)
-    private productsRepository: Repository<Product>,
-    @InjectRepository(ProductRating)
-    private productRatingsRepository: Repository<ProductRating>,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
   async findAll(): Promise<Product[]> {
-    return await this.productsRepository.find({ relations: { rating: true } });
+    return await this.prismaService.product.findMany({
+      include: { rating: true },
+    });
   }
-  async getProductById(data: number): Promise<Product[]> {
-    const product = await this.productsRepository.findOne({
-      where: { id: data },
-      relations: { rating: true },
+  async getProductById(id: string): Promise<Product[]> {
+    const product = await this.prismaService.product.findUnique({
+      where: { id: parseInt(id) },
+      include: { rating: true },
     });
     return [product];
   }
@@ -27,53 +23,54 @@ export class ProductsService {
     const productRating = new ProductRating();
     productRating.rate = data.rating.rate;
 
-    const product = new Product();
-    product.title = data.title;
-    product.tenantId = data.tenantId;
-    product.description = data.description;
-    product.category = data.category;
-    product.image = data.image;
-    product.price = data.price;
-    product.rating = productRating;
-
-    await this.productsRepository.save(product);
-    return await this.findAll();
-  }
-  async updateProduct(data: IProduct, id: number): Promise<Product[]> {
-    await this.productsRepository
-      .createQueryBuilder()
-      .update(Product)
-      .set({
+    const product = await this.prismaService.product.create({
+      data: {
         title: data.title,
         tenantId: data.tenantId,
         description: data.description,
         category: data.category,
         image: data.image,
         price: data.price,
-      })
-      .where({
-        id: id,
-      })
-      .returning('*')
-      .execute();
+      },
+    });
+    await this.prismaService.product_rating.create({
+      data: { productId: product.id, rate: data.rating.rate },
+    });
+    return await this.findAll();
+  }
+  async updateProduct(data: IProduct, id: string): Promise<Product[]> {
+    const product = await this.prismaService.product.update({
+      where: { id: parseInt(id) },
+      data: {
+        title: data.title,
+        tenantId: data.tenantId,
+        description: data.description,
+        category: data.category,
+        image: data.image,
+        price: data.price,
+      },
+    });
 
-    await this.productRatingsRepository
-      .createQueryBuilder()
-      .update(ProductRating)
-      .set({
+    await this.prismaService.product_rating.update({
+      where: { productId: product.id },
+      data: {
+        productId: product.id,
         rate: data.rating.rate,
-      })
-      .where({
-        productId: id,
-      })
-      .returning('*')
-      .execute();
+      },
+    });
 
     return await this.getProductById(id);
   }
 
-  async deleteProduct(data: number) {
-    const result = await this.productsRepository.delete({ id: data });
-    return result;
+  async deleteProduct(id: string) {
+    const productResult = await this.prismaService.product.delete({
+      where: { id: parseInt(id) },
+    });
+    const ratingsResult = await this.prismaService.product_rating.delete({
+      where: { productId: parseInt(id) },
+    });
+    if (productResult && ratingsResult) {
+      return 'Product ID: ' + id + ' removed';
+    }
   }
 }

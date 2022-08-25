@@ -1,46 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from 'src/categories/category.entity';
-import { ICategories } from 'src/categories/ICategories';
-import { Repository } from 'typeorm';
+import { Category } from './categories.entity';
+import { ICategories } from './ICategories';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class CategoriesService {
-  constructor(
-    @InjectRepository(Category)
-    private categoriesRepository: Repository<Category>,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
   async findAll(): Promise<Category[]> {
-    return await this.categoriesRepository.find();
+    return await this.prismaService.category.findMany();
   }
-  async getCategoryById(data: number): Promise<Category[]> {
-    const category = await this.categoriesRepository.findOneBy({ id: data });
+  async getCategoryById(id: string): Promise<Category[]> {
+    const category = await this.prismaService.category.findUnique({
+      where: { id: parseInt(id) },
+    });
     return [category];
   }
   async addNewCategory(data: ICategories): Promise<Category[]> {
-    const category = new Category();
-    category.categoryName = data.categoryName;
-
-    await this.categoriesRepository.save(category);
+    await this.prismaService.category.create({
+      data: { categoryName: data.categoryName },
+    });
     return await this.findAll();
   }
-  async updateCategory(data: ICategories, id: number): Promise<Category[]> {
-    const result = await this.categoriesRepository
-      .createQueryBuilder()
-      .update({
-        categoryName: data.categoryName,
-      })
-      .where({
-        id: id,
-      })
-      .returning('*')
-      .execute();
+  async updateCategory(data: ICategories, id: string): Promise<Category[]> {
+    await this.prismaService.category.update({
+      where: { id: parseInt(id) },
+      data: { categoryName: data.categoryName },
+    });
 
-    return await result.raw[0];
+    return await this.getCategoryById(id);
   }
 
-  async deleteCategory(data: number) {
-    const result = await this.categoriesRepository.delete({ id: data });
+  async deleteCategory(id: string) {
+    const result = await this.prismaService.category.delete({
+      where: { id: parseInt(id) },
+    });
     return result;
   }
 }
