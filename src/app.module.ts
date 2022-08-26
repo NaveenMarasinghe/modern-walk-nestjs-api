@@ -3,13 +3,13 @@ import { ProductsModule } from './products/products.module';
 import { TenantsModule } from './tenants/tenants.module';
 import { CategoriesModule } from './categories/categories.module';
 import { UsersModule } from './users/users.module';
-import { LoggerMiddleware } from './middleware/logger.middleware';
+import { ResponseTimeMiddleware } from './middleware/reponseTime.middleware';
 
 @Module({
   imports: [CategoriesModule, UsersModule, ProductsModule, TenantsModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer.apply(ResponseTimeMiddleware).forRoutes('*');
   }
 }
