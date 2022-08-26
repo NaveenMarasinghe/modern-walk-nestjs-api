@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Category } from './categories.entity';
 import { ICategories } from './ICategories';
 import { PrismaService } from 'prisma/prisma.service';
@@ -7,33 +7,95 @@ import { PrismaService } from 'prisma/prisma.service';
 export class CategoriesService {
   constructor(private readonly prismaService: PrismaService) {}
   async findAll(): Promise<Category[]> {
-    return await this.prismaService.category.findMany();
+    const result = await this.prismaService.category.findMany();
+    if (!result) {
+      throw new HttpException(
+        { message: 'No data found' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return result;
   }
   async getCategoryById(id: string): Promise<Category[]> {
+    if (!id) {
+      throw new HttpException(
+        { message: 'Id not found' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const category = await this.prismaService.category.findUnique({
       where: { id: parseInt(id) },
     });
+    if (!category) {
+      throw new HttpException(
+        { message: 'No data found' },
+        HttpStatus.NO_CONTENT,
+      );
+    }
     return [category];
   }
   async addNewCategory(data: ICategories): Promise<Category[]> {
-    await this.prismaService.category.create({
+    if (!data) {
+      throw new HttpException(
+        { message: 'Post request body data not found' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const result = await this.prismaService.category.create({
       data: { categoryName: data.categoryName },
     });
-    return await this.findAll();
+    if (!result) {
+      throw new HttpException(
+        { message: 'Add new data failed' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return await this.getCategoryById(result.id.toString());
   }
   async updateCategory(data: ICategories, id: string): Promise<Category[]> {
-    await this.prismaService.category.update({
+    if (!data) {
+      throw new HttpException(
+        { message: 'Put request data not found' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (!id) {
+      throw new HttpException(
+        { message: 'Id not found' },
+        HttpStatus.NO_CONTENT,
+      );
+    }
+    const result = await this.prismaService.category.update({
       where: { id: parseInt(id) },
       data: { categoryName: data.categoryName },
     });
+
+    if (!result) {
+      throw new HttpException(
+        { message: 'Update failed' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     return await this.getCategoryById(id);
   }
 
   async deleteCategory(id: string) {
+    if (!id) {
+      throw new HttpException(
+        { message: 'Id not found' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const result = await this.prismaService.category.delete({
       where: { id: parseInt(id) },
     });
+    if (!result) {
+      throw new HttpException(
+        { message: 'Data remove failed' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     return result;
   }
 }
