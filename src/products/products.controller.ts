@@ -23,7 +23,7 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   @ApiParam({ name: 'id' })
   getUserById(@Param('id', new ParseIntPipe()) id): Promise<Product[]> {
     return this.productsService.getProductById(id);
@@ -36,13 +36,13 @@ export class ProductsController {
   }
 
   @ApiBody({ type: Product })
-  @Put(':id')
+  @Put('/:id')
   @ApiParam({ name: 'id' })
   updateUser(@Body() user: IProduct, @Param('id', new ParseIntPipe()) id) {
     return this.productsService.updateProduct(user, id);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   @ApiParam({ name: 'id' })
   deleteUser(@Param('id', new ParseIntPipe()) id) {
     return this.productsService.deleteProduct(id);

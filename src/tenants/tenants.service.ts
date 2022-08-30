@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Tenant } from './tenants.entity';
 import { ITenant } from './ITenant';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TenantsService {

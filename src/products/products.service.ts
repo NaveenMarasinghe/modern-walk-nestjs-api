@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Product } from './products.entity';
-import { ProductRating } from './productRating.entity';
 import { IProduct } from './IProduct';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProductsService {
@@ -38,15 +37,13 @@ export class ProductsService {
     }
     return [product];
   }
-  async addNewProduct(data: IProduct): Promise<Product[]> {
+  async addNewProduct(data: IProduct): Promise<IProduct[]> {
     if (!data) {
       throw new HttpException(
         { message: 'Post request data found' },
         HttpStatus.BAD_REQUEST,
       );
     }
-    const productRating = new ProductRating();
-    productRating.rate = data.rating.rate;
 
     const product = await this.prismaService.product.create({
       data: {
@@ -58,16 +55,32 @@ export class ProductsService {
         price: data.price,
       },
     });
-    const result = await this.prismaService.product_rating.create({
+    const productRating = await this.prismaService.product_rating.create({
       data: { productId: product.id, rate: data.rating.rate },
     });
-    if (!result) {
+    if (!product && !productRating) {
       throw new HttpException(
         { message: 'Add new product failed' },
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.getProductById(data.id);
+    const result: IProduct[] = [
+      {
+        id: product.id,
+        title: product.title,
+        tenantId: product.tenantId,
+        description: product.description,
+        category: product.category,
+        price: product.price,
+        image: product.title,
+        rating: {
+          id: productRating.id,
+          productId: productRating.productId,
+          rate: productRating.rate,
+        },
+      },
+    ];
+    return result;
   }
   async updateProduct(data: IProduct, id: number): Promise<Product[]> {
     if (!id) {
@@ -122,10 +135,7 @@ export class ProductsService {
     const productResult = await this.prismaService.product.delete({
       where: { id: id },
     });
-    const ratingsResult = await this.prismaService.product_rating.delete({
-      where: { productId: id },
-    });
-    if (!productResult && !ratingsResult) {
+    if (!productResult) {
       throw new HttpException(
         { message: 'Data remove failed' },
         HttpStatus.BAD_REQUEST,
