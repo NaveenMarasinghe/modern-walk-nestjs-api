@@ -11,6 +11,7 @@ import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Category } from 'src/categories/categories.entity';
 import { ICategories } from 'src/categories/ICategories';
 import { CategoriesService } from 'src/categories/categories.sevice';
+import { ParseIntPipe } from 'src/pipes/parseInt';
 
 @Controller('categories')
 @ApiTags('Categories')
@@ -24,8 +25,8 @@ export class CategoriesController {
 
   @Get('/:id')
   @ApiParam({ name: 'id' })
-  getUserById(@Param() params): Promise<Category[]> {
-    return this.categoriesService.getCategoryById(params.id);
+  getUserById(@Param('id', new ParseIntPipe()) id): Promise<Category[]> {
+    return this.categoriesService.getCategoryById(id);
   }
 
   @ApiBody({ type: Category })
@@ -37,13 +38,16 @@ export class CategoriesController {
   @ApiBody({ type: Category })
   @Put('/:id')
   @ApiParam({ name: 'id' })
-  updateUser(@Body() category: ICategories, @Param() params) {
-    return this.categoriesService.updateCategory(category, params.id);
+  updateUser(
+    @Body() category: ICategories,
+    @Param('id', new ParseIntPipe()) id,
+  ) {
+    return this.categoriesService.updateCategory(category, id);
   }
 
   @Delete('/:id')
   @ApiParam({ name: 'id' })
-  deleteUser(@Param() params) {
-    return this.categoriesService.deleteCategory(params.id);
+  deleteUser(@Param('id', new ParseIntPipe()) id) {
+    return this.categoriesService.deleteCategory(id);
   }
 }

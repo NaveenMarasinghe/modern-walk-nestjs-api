@@ -16,7 +16,7 @@ export class UsersService {
     }
     return result;
   }
-  async getUserById(id: string): Promise<User[]> {
+  async getUserById(id: number): Promise<User[]> {
     if (!id) {
       throw new HttpException(
         { message: 'Id data found' },
@@ -24,7 +24,7 @@ export class UsersService {
       );
     }
     const user = await this.prismaService.user.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
     if (!user) {
       throw new HttpException(
@@ -55,9 +55,9 @@ export class UsersService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.getUserById(data.id.toString());
+    return await this.getUserById(data.id);
   }
-  async updateUser(data: IUser, id: string): Promise<User[]> {
+  async updateUser(data: IUser, id: number): Promise<User[]> {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -72,7 +72,7 @@ export class UsersService {
     }
 
     const result = await this.prismaService.user.update({
-      where: { id: parseInt(id) },
+      where: { id: id },
       data: { name: data.name, email: data.email, password: data.password },
     });
     if (!result) {
@@ -84,7 +84,7 @@ export class UsersService {
     return await this.getUserById(id);
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: number) {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -92,7 +92,7 @@ export class UsersService {
       );
     }
     const result = await this.prismaService.user.delete({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
     if (!result) {
       throw new HttpException(

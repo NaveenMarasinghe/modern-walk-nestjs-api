@@ -11,6 +11,7 @@ import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Tenant } from './tenants.entity';
 import { ITenant } from './ITenant';
 import { TenantsService } from 'src/tenants/tenants.service';
+import { ParseIntPipe } from 'src/pipes/parseInt';
 
 @Controller('tenants')
 @ApiTags('Tenants')
@@ -24,8 +25,8 @@ export class TenantsController {
 
   @Get(':id')
   @ApiParam({ name: 'id' })
-  getUserById(@Param() params): Promise<Tenant[]> {
-    return this.tenantsService.getTenantById(params.id);
+  getUserById(@Param('id', new ParseIntPipe()) id): Promise<Tenant[]> {
+    return this.tenantsService.getTenantById(id);
   }
 
   @ApiBody({ type: Tenant })
@@ -37,13 +38,13 @@ export class TenantsController {
   @ApiBody({ type: Tenant })
   @Put(':id')
   @ApiParam({ name: 'id' })
-  updateUser(@Body() tenant: ITenant, @Param() params) {
-    return this.tenantsService.updateTenant(tenant, params.id);
+  updateUser(@Body() tenant: ITenant, @Param('id', new ParseIntPipe()) id) {
+    return this.tenantsService.updateTenant(tenant, id);
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id' })
-  deleteUser(@Param() params) {
-    return this.tenantsService.deleteTenant(params.id);
+  deleteUser(@Param('id', new ParseIntPipe()) id) {
+    return this.tenantsService.deleteTenant(id);
   }
 }

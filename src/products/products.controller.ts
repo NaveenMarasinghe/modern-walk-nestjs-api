@@ -11,6 +11,7 @@ import { ProductsService } from './products.service';
 import { Product } from './products.entity';
 import { IProduct } from './IProduct';
 import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ParseIntPipe } from 'src/pipes/parseInt';
 
 @Controller('products')
 @ApiTags('Products')
@@ -24,8 +25,8 @@ export class ProductsController {
 
   @Get(':id')
   @ApiParam({ name: 'id' })
-  getUserById(@Param() params): Promise<Product[]> {
-    return this.productsService.getProductById(params.id);
+  getUserById(@Param('id', new ParseIntPipe()) id): Promise<Product[]> {
+    return this.productsService.getProductById(id);
   }
 
   @ApiBody({ type: Product })
@@ -37,13 +38,13 @@ export class ProductsController {
   @ApiBody({ type: Product })
   @Put(':id')
   @ApiParam({ name: 'id' })
-  updateUser(@Body() user: IProduct, @Param() params) {
-    return this.productsService.updateProduct(user, params.id);
+  updateUser(@Body() user: IProduct, @Param('id', new ParseIntPipe()) id) {
+    return this.productsService.updateProduct(user, id);
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id' })
-  deleteUser(@Param() params) {
-    return this.productsService.deleteProduct(params.id);
+  deleteUser(@Param('id', new ParseIntPipe()) id) {
+    return this.productsService.deleteProduct(id);
   }
 }

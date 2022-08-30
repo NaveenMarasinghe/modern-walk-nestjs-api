@@ -19,7 +19,7 @@ export class ProductsService {
     }
     return result;
   }
-  async getProductById(id: string): Promise<Product[]> {
+  async getProductById(id: number): Promise<Product[]> {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -27,7 +27,7 @@ export class ProductsService {
       );
     }
     const product = await this.prismaService.product.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: id },
       include: { rating: true },
     });
     if (!product) {
@@ -67,9 +67,9 @@ export class ProductsService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.getProductById(data.id.toString());
+    return await this.getProductById(data.id);
   }
-  async updateProduct(data: IProduct, id: string): Promise<Product[]> {
+  async updateProduct(data: IProduct, id: number): Promise<Product[]> {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -83,7 +83,7 @@ export class ProductsService {
       );
     }
     const product = await this.prismaService.product.update({
-      where: { id: parseInt(id) },
+      where: { id: id },
       data: {
         title: data.title,
         tenantId: data.tenantId,
@@ -112,7 +112,7 @@ export class ProductsService {
     return await this.getProductById(id);
   }
 
-  async deleteProduct(id: string) {
+  async deleteProduct(id: number) {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -120,10 +120,10 @@ export class ProductsService {
       );
     }
     const productResult = await this.prismaService.product.delete({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
     const ratingsResult = await this.prismaService.product_rating.delete({
-      where: { productId: parseInt(id) },
+      where: { productId: id },
     });
     if (!productResult && !ratingsResult) {
       throw new HttpException(

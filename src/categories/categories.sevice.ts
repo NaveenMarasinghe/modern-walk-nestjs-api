@@ -16,7 +16,7 @@ export class CategoriesService {
     }
     return result;
   }
-  async getCategoryById(id: string): Promise<Category[]> {
+  async getCategoryById(id: number): Promise<Category[]> {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -24,7 +24,7 @@ export class CategoriesService {
       );
     }
     const category = await this.prismaService.category.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
     if (!category) {
       throw new HttpException(
@@ -50,9 +50,9 @@ export class CategoriesService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.getCategoryById(result.id.toString());
+    return await this.getCategoryById(result.id);
   }
-  async updateCategory(data: ICategories, id: string): Promise<Category[]> {
+  async updateCategory(data: ICategories, id: number): Promise<Category[]> {
     if (!data) {
       throw new HttpException(
         { message: 'Put request data not found' },
@@ -66,7 +66,7 @@ export class CategoriesService {
       );
     }
     const result = await this.prismaService.category.update({
-      where: { id: parseInt(id) },
+      where: { id: id },
       data: { categoryName: data.categoryName },
     });
 
@@ -80,7 +80,7 @@ export class CategoriesService {
     return await this.getCategoryById(id);
   }
 
-  async deleteCategory(id: string) {
+  async deleteCategory(id: number) {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -88,7 +88,7 @@ export class CategoriesService {
       );
     }
     const result = await this.prismaService.category.delete({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
     if (!result) {
       throw new HttpException(

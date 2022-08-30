@@ -16,7 +16,7 @@ export class TenantsService {
     }
     return result;
   }
-  async getTenantById(id: string): Promise<Tenant[]> {
+  async getTenantById(id: number): Promise<Tenant[]> {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -24,7 +24,7 @@ export class TenantsService {
       );
     }
     const tenant = await this.prismaService.tenant.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
     if (!tenant) {
       throw new HttpException(
@@ -52,7 +52,7 @@ export class TenantsService {
     }
     return await this.findAll();
   }
-  async updateTenant(data: ITenant, id: string): Promise<Tenant[]> {
+  async updateTenant(data: ITenant, id: number): Promise<Tenant[]> {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -66,7 +66,7 @@ export class TenantsService {
       );
     }
     const result = await this.prismaService.tenant.update({
-      where: { id: parseInt(id) },
+      where: { id: id },
       data: { code: data.code, name: data.name },
     });
     if (!result) {
@@ -78,7 +78,7 @@ export class TenantsService {
     return await this.getTenantById(id);
   }
 
-  async deleteTenant(id: string) {
+  async deleteTenant(id: number) {
     if (!id) {
       throw new HttpException(
         { message: 'Id not found' },
@@ -86,7 +86,7 @@ export class TenantsService {
       );
     }
     const result = await this.prismaService.tenant.delete({
-      where: { id: parseInt(id) },
+      where: { id: id },
     });
     if (!result) {
       throw new HttpException(
