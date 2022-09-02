@@ -1,11 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Tenant } from './tenants.entity';
 import { ITenant } from './ITenant';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TenantsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  private readonly prismaService;
+  constructor(
+    @Inject('COMMON_CONNECTION')
+    connection,
+  ) {
+    this.prismaService = connection;
+  }
   async findAll(): Promise<Tenant[]> {
     const result = await this.prismaService.tenant.findMany();
     if (!result) {

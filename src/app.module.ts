@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ProductsModule } from './products/products.module';
-import { TenantsModule } from './tenants/tenants.module';
-import { CategoriesModule } from './categories/categories.module';
-import { UsersModule } from './users/users.module';
+import { ProductsModule } from './modules/products/products.module';
+import { TenantsModule } from './modules/tenants/tenants.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { UsersModule } from './modules/users/users.module';
 import { ResponseTimeMiddleware } from './middleware/reponseTime.middleware';
 
 @Module({

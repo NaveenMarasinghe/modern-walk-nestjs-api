@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Category } from './categories.entity';
 import { ICategories } from './ICategories';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly prismaService: PrismaService) {}
+  private readonly prismaService;
+
   async findAll(): Promise<Category[]> {
     const result = await this.prismaService.category.findMany();
     if (!result) {

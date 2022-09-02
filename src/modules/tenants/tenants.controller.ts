@@ -10,7 +10,7 @@ import {
 import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Tenant } from './tenants.entity';
 import { ITenant } from './ITenant';
-import { TenantsService } from 'src/tenants/tenants.service';
+import { TenantsService } from 'src/modules/tenants/tenants.service';
 import { ParseIntPipe } from 'src/pipes/parseInt';
 
 @Controller('tenants')
