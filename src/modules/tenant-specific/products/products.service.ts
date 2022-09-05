@@ -1,26 +1,26 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from 'src/products/product.entity';
-import { ProductRating } from 'src/products/productRating.entity';
-import { IProduct } from 'src/products/IProduct';
+import { Inject, Injectable } from '@nestjs/common';
+import { Product } from './product.entity';
+import { ProductRating } from './productRating.entity';
+import { IProduct } from './IProduct';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
+  private readonly productsRepository: Repository<Product>;
+  private readonly productRatingsRepository: Repository<ProductRating>;
   constructor(
-    @InjectRepository(Product)
-    private productsRepository: Repository<Product>,
-    @InjectRepository(ProductRating)
-    private productRatingsRepository: Repository<ProductRating>,
-  ) {}
-  async findAll(): Promise<Product[]> {
-    return await this.productsRepository.find({ relations: { rating: true } });
+    @Inject('TENANT_CONNECTION')
+    tenantConnection,
+  ) {
+    this.productsRepository = tenantConnection.getRepository(Product);
+    this.productRatingsRepository =
+      tenantConnection.getRepository(ProductRating);
   }
-  async getProductById(data: number): Promise<Product[]> {
-    const product = await this.productsRepository.findOne({
-      where: { id: data },
-      relations: { rating: true },
-    });
+  async findAll(): Promise<Product[]> {
+    return await this.productsRepository.find();
+  }
+  async getProductById(id: number): Promise<Product[]> {
+    const product = await this.productsRepository.findOne(id);
     return [product];
   }
   async addNewProduct(data: IProduct): Promise<Product[]> {

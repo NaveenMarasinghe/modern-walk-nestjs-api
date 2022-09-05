@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/user.entity';
-import { IUser } from 'src/users/IUser';
+import { Inject, Injectable } from '@nestjs/common';
+import { User } from 'src/modules/common/users/user.entity';
+import { IUser } from 'src/modules/common/users/IUser';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
+  private readonly usersRepository: Repository<User>;
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+    @Inject('COMMON_CONNECTION')
+    commonConnection,
+  ) {
+    this.usersRepository = commonConnection.getRepository(User);
+  }
   async findAll(): Promise<User[]> {
     return await this.usersRepository.find();
   }
   async getUserById(data: number): Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id: data });
+    const user = await this.usersRepository.findOne({ id: data });
     return [user];
   }
   async addNewUser(data: IUser): Promise<User[]> {

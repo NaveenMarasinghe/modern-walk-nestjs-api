@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from 'src/categories/category.entity';
-import { ICategories } from 'src/categories/ICategories';
+import { Inject, Injectable } from '@nestjs/common';
+import { Category } from 'src/modules/common/categories/category.entity';
+import { ICategories } from 'src/modules/common/categories/ICategories';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriesService {
+  private readonly categoriesRepository: Repository<Category>;
   constructor(
-    @InjectRepository(Category)
-    private categoriesRepository: Repository<Category>,
-  ) {}
+    @Inject('COMMON_CONNECTION')
+    commonConnection,
+  ) {
+    this.categoriesRepository = commonConnection.getRepository(Category);
+  }
   async findAll(): Promise<Category[]> {
     return await this.categoriesRepository.find();
   }
   async getCategoryById(data: number): Promise<Category[]> {
-    const category = await this.categoriesRepository.findOneBy({ id: data });
+    const category = await this.categoriesRepository.findOne({ id: data });
     return [category];
   }
   async addNewCategory(data: ICategories): Promise<Category[]> {
