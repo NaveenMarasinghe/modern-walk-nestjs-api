@@ -8,8 +8,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from 'src/users/user.entity';
-import { IUser } from 'src/users/IUser';
+import { User } from 'src/modules/users/user.entity';
+import { IUser } from 'src/modules/users/IUser';
 import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @Controller('users')

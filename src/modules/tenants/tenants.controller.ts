@@ -8,9 +8,9 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
-import { Tenant } from 'src/tenants/tenant.entity';
-import { ITenant } from 'src/tenants/ITenant';
-import { TenantsService } from 'src/tenants/tenants.service';
+import { Tenant } from 'src/modules/tenants/tenant.entity';
+import { ITenant } from 'src/modules/tenants/ITenant';
+import { TenantsService } from 'src/modules/tenants/tenants.service';
 
 @Controller('tenants')
 @ApiTags('Tenants')

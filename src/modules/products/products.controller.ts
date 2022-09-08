@@ -8,8 +8,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { Product } from 'src/products/product.entity';
-import { IProduct } from 'src/products/IProduct';
+import { Product } from 'src/modules/products/product.entity';
+import { IProduct } from 'src/modules/products/IProduct';
 import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @Controller('products')
