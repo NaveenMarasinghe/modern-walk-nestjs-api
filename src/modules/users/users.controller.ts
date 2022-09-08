@@ -23,9 +23,9 @@ export class UsersController {
   }
 
   @Get(':id')
-  @ApiParam({ name: 'id' })
+  @ApiParam({ name: 'username' })
   getUserById(@Param() params): Promise<User[]> {
-    return this.usersService.getUserById(params.id);
+    return this.usersService.findOne(params.username);
   }
 
   @ApiBody({ type: User })

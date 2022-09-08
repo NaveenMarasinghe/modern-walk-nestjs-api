@@ -13,8 +13,8 @@ export class UsersService {
   async findAll(): Promise<User[]> {
     return await this.usersRepository.find();
   }
-  async getUserById(data: number): Promise<User[]> {
-    const user = await this.usersRepository.findOneBy({ id: data });
+  async findOne(username: string): Promise<User[]> {
+    const user = await this.usersRepository.findOneBy({ name: username });
     return [user];
   }
   async addNewUser(data: IUser): Promise<User[]> {
