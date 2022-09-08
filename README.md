@@ -3,7 +3,7 @@
 REST API for modern walk app.
 
 ## Technologies used
-TypeScript, NodeJS, NestJS
+TypeScript, NodeJS, NestJS, TypeORM, PostgreSQL
 
 ## Architecture
 
