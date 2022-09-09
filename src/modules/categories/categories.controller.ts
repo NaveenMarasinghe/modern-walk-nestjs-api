@@ -11,6 +11,8 @@ import { ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Category } from 'src/modules/categories/category.entity';
 import { ICategories } from 'src/modules/categories/ICategories';
 import { CategoriesService } from 'src/modules/categories/categories.sevice';
+import { Roles } from 'src/auth/roleBasedAuth/roles.decorator';
+import { Role } from 'src/auth/roleBasedAuth/role.enum';
 
 @Controller('categories')
 @ApiTags('Categories')
@@ -18,6 +20,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
+  @Roles(Role.Admin) //require the role
   getAllUsers(): Promise<Category[]> {
     return this.categoriesService.findAll();
   }

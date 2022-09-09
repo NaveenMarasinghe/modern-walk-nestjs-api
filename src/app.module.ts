@@ -12,6 +12,8 @@ import { ProductRating } from './modules/products/productRating.entity';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthController } from './auth/auth.controller';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './auth/roleBasedAuth/roles.guard';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { AuthController } from './auth/auth.controller';
       password: 'postgres',
       database: 'test',
       entities: [User, Product, Tenant, Category, ProductRating],
-      synchronize: true,
+      synchronize: false,
     }),
     AuthModule,
   ],
